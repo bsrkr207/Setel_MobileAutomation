@@ -1,0 +1,39 @@
+{
+	"userID" : "bsrkr207@gmail.com",
+	"password" : "test@12#",
+	
+	//run platform # android | ios
+	"platform" : "android",
+	
+	//appium service ip and port
+	"ip" : "127.0.0.1",
+	"port" : "4723",
+	
+	//# true | false
+	"hybrid" : "false",
+	
+	// # true | false
+	//inform appium to run with XCUITest or not
+	
+	"platform_ios_xcode8" : "false",
+	
+	
+	"platform_ios_version" : "",
+	"device_ios_name" : "",
+	
+	"device_android_name" : "Android Emulator",
+	"platform_android_version" : "11",
+	
+	
+	"app_ios_path" : "",
+	"app_android_path" : "apk/com.todoist.apk",
+	
+	//app info
+	"appPackage" : "com_todoist",
+	"appActivity" : "com_todoist_activity_WelcomeActivity",
+	
+	
+	"base_uri" : "https://api_todoist_com",
+	"bearer_token" : "edf47577bc44234d0e5c5c44bb05da0abaf3c136"
+	
+}
