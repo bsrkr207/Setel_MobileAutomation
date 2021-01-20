@@ -1,28 +1,43 @@
 package utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
-
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Timestamp;
+import java.util.Base64;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebElement;
 
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.MediaEntityBuilder;
+import com.aventstack.extentreports.Status;
+import com.aventstack.extentreports.markuputils.Markup;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
+
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.MobileElement;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.remote.MobileCapabilityType;
 import io.appium.java_client.remote.MobilePlatform;
 
 public class Helper {
-
 	
+	ExtentReports extent; 
+	AppiumDriver<?> driver;
 	
-	public static AppiumDriver<?> returnDriver(String platform) throws Exception {
-        
-    	AppiumDriver<?> driver;
+	//Driver initialization
+	public AppiumDriver<?> returnDriver(String platform) throws Exception {
         
     	TestData testdata = new TestData();
 		
-		testdata = testdata.returnTestData();
+		testdata = testdata.ReturnTestData();
 		
         DesiredCapabilities capabilities = new DesiredCapabilities();
 
@@ -63,5 +78,129 @@ public class Helper {
         return driver;
     }
 	
+	//Extension methods
+    public void ClickOnTheElement(MobileElement element) {
+    	element.click();
+    }
 
+    public void EnterTextIntoTextbox(MobileElement element, String text) {
+    	element.sendKeys(text);
+    }
+	
+	
+	
+	//Extent report initialization
+	public ExtentReports startExtentReport(String reportName) {
+		
+		String timestamp = new Timestamp(System.currentTimeMillis()).toString();
+		
+		String path = createReportsPath() +"\\"+ reportName +"_"+ timestamp.replace(":", ".") +".html";
+		
+		ExtentSparkReporter spark = new ExtentSparkReporter(path);
+		
+		try {
+			
+			spark.loadXMLConfig(Paths.get("spark-config.xml").toFile());
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		extent = new ExtentReports();
+		
+		extent.setSystemInfo("OS", System.getProperty("os.name"));
+		extent.setSystemInfo("Environment", "QA");
+		extent.setSystemInfo("User", System.getProperty("user.name"));
+		extent.setReportUsesManualConfiguration(false);
+		extent.attachReporter(spark);
+		
+		return extent;
+	}
+
+	public void generateLogs(String status, String msg, ExtentTest test) {
+	
+		status = status.toLowerCase();
+		
+		switch (status) {
+		case "pass":
+			test.log(Status.PASS, msg);
+			break;
+
+		case "fail":
+			test.log(Status.FAIL, msg);
+			break;
+
+		case "warning":
+			test.log(Status.WARNING, msg);
+			break;
+
+		case "info":
+			test.log(Status.INFO, msg);
+			break;
+		}
+	}
+	
+	public void generateLogsWithScreenshot(String status, String screenshotName, ExtentTest test) {
+		
+		status = status.toLowerCase();
+
+		File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+
+        String image = encodeFileToBase64(scrFile);
+        
+		
+		switch (status) {
+		case "pass":
+			test.log(Status.PASS, MediaEntityBuilder.createScreenCaptureFromBase64String(image, screenshotName).build());
+			break;
+
+		case "fail":
+			test.log(Status.FAIL, MediaEntityBuilder.createScreenCaptureFromBase64String(image, screenshotName).build());
+			break;
+
+		case "warning":
+			test.log(Status.WARNING, MediaEntityBuilder.createScreenCaptureFromBase64String(image, screenshotName).build());
+			break;
+
+		case "info":
+			test.log(Status.INFO, MediaEntityBuilder.createScreenCaptureFromBase64String(image, screenshotName).build());
+			break;
+		}
+	}
+	
+	
+	public void endExtentReport() {
+		
+		extent.flush();
+	}
+	
+	private File createReportsPath() {
+		
+		File dir = null;
+		
+		try {
+			
+			dir = new File("C:\\AutomationReports");
+		    
+			if (!dir.exists()) dir.mkdirs();
+		    			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}		
+		return dir;
+	    
+	}
+	
+	private String encodeFileToBase64(File file) {
+	    try {
+	        
+	    	byte[] fileContent = Files.readAllBytes(file.toPath());
+	        
+	    	return Base64.getEncoder().encodeToString(fileContent);
+	    
+	    } catch (IOException e) {
+	        throw new IllegalStateException("could not read file " + file, e);
+	    }
+	}
+	
 }

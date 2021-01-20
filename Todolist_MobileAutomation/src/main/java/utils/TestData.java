@@ -166,7 +166,7 @@ public class TestData {
 	
 	
 	
-	public TestData returnTestData() {
+	public TestData ReturnTestData() {
 		
 		TestData testdata = null;
 		
