@@ -3,6 +3,7 @@ package utils;
 import org.testng.Assert;
 
 import com.google.gson.JsonObject;
+import com.aventstack.extentreports.ExtentTest;
 import com.google.gson.JsonArray;
 
 import io.restassured.RestAssured;
@@ -12,8 +13,14 @@ import io.restassured.specification.RequestSpecification;
 public class APIHelper {
 	
 	RequestSpecification request = RestAssured.given();
+	Helper helper = new Helper();
 	private String projects_subURI = "/rest/v1/projects";
 	private String tasks_subURI = "/rest/v1/tasks";
+    ExtentTest test;
+	
+    public APIHelper(ExtentTest test) {
+    	this.test = test;
+	}
     
 	public Response PostWithAuthorizeRequest(String uri, JsonObject data, String token) {
         
@@ -37,7 +44,7 @@ public class APIHelper {
             }
             
         } catch(Exception e){
-            //logger.error("Can NOT send Post Json & Authorize Request with URI: " + e);
+        	helper.WriteLogs("error", "Can NOT send Post Json & Authorize Request with URI: "+ e.getMessage(), test);
         }
         return  response;
     }
@@ -53,13 +60,13 @@ public class APIHelper {
     		.post();
      
         } catch(Exception e){
-            //logger.error("Can NOT send Get Authorize Request with URI: " + e);
+        	helper.WriteLogs("error", "Can NOT send Get Authorize Request with URI: "+ e.getMessage(), test);
         }
         return  response;
     }
 
     
-    public void createProjectSuccessfully(String baseURI, String projectName, String bearerToken) {
+    public void CreateProjectSuccessfully(String baseURI, String projectName, String bearerToken) {
         
     	String uri = baseURI + projects_subURI;
         
@@ -69,21 +76,29 @@ public class APIHelper {
         
     	Response response = PostWithAuthorizeRequest(uri, data, bearerToken);
         
-    	Assert.assertEquals(200, response.getStatusCode());
+    	try {
+		
+    		Assert.assertEquals(200, response.getStatusCode());
+    		helper.WriteLogs("pass", "Response code is 200 >>  Project Created Successfully, Project name is >>"+ projectName, test);
+		
+    	} catch (Exception e) {
+			helper.WriteLogs("error", "Create Project Response code is not 200 : "+ e.getMessage(), test);
+		}
+    	
     }
 
     
     
-    public Response getActiveTasks(String baseURI, String bearerToken) {
+    public Response GetActiveTasks(String baseURI, String bearerToken) {
         
     	String uri = baseURI + tasks_subURI;
         
     	return GetWithAuthorizeRequest(uri, bearerToken);
     }
 
-    public void verifyTaskHasBeenCreatedSuccessfully(String baseURI, String bearerToken, String taskName) {
+    public void VerifyTaskHasBeenCreatedSuccessfully(String baseURI, String bearerToken, String taskName) {
         
-    	Response response = getActiveTasks(baseURI, bearerToken);
+    	Response response = GetActiveTasks(baseURI, bearerToken);
         
     	boolean result = false;
         
@@ -110,9 +125,9 @@ public class APIHelper {
         Assert.assertTrue(result);
     }
 
-    public String getIdBaseOnTaskName(String baseURI, String bearerToken, String taskName) {
+    public String GetIdBaseOnTaskName(String baseURI, String bearerToken, String taskName) {
         
-    	Response response = getActiveTasks(baseURI, bearerToken);
+    	Response response = GetActiveTasks(baseURI, bearerToken);
         
     	String taskId = null;
         
@@ -140,9 +155,9 @@ public class APIHelper {
         return taskId;
     }
 
-    public void reopenATaskSuccessfully(String baseURI, String bearerToken, String taskName){
+    public void ReopenATaskSuccessfully(String baseURI, String bearerToken, String taskName){
         
-    	String taskId = getIdBaseOnTaskName(baseURI, bearerToken, taskName);
+    	String taskId = GetIdBaseOnTaskName(baseURI, bearerToken, taskName);
         
     	String updatedURI = baseURI + tasks_subURI + "/" + taskId + "/reopen";
         
@@ -150,8 +165,14 @@ public class APIHelper {
         
     	Response response = PostWithAuthorizeRequest(updatedURI, data, bearerToken);
         
-    	Assert.assertEquals(200, response.getStatusCode());
-    	
+    	try {
+    		
+    		Assert.assertEquals(200, response.getStatusCode());
+    		helper.WriteLogs("pass", "Response code is 200 >>  Task Reopened Successfully, Task Name Is >>"+ taskName, test);
+		
+    	} catch (Exception e) {
+			helper.WriteLogs("error", "Task Reopen Response code is not 200 : "+ e.getMessage(), test);
+		}
     	
     }
 

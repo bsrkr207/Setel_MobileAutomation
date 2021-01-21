@@ -26,14 +26,15 @@
 	
 	
 	"app_ios_path" : "",
-	"app_android_path" : "apk/com.todoist.apk",
+	"app_android_path" : "\\apk\\com.todoist.apk",
 	
 	//app info
-	"appPackage" : "com_todoist",
-	"appActivity" : "com_todoist_activity_WelcomeActivity",
+	"appPackage" : "com.todoist",
+	"appActivity" : "com.todoist.activity.HomeActivity",
+					
 	
 	
-	"base_uri" : "https://api_todoist_com",
+	"base_uri" : "https://api.todoist.com",
 	"bearer_token" : "a74af989e46a0d64d63525749993cf8cad756258"
 	
 }

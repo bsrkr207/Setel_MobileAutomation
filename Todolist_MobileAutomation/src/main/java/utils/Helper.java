@@ -3,15 +3,22 @@ package utils;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.Base64;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.processing.SupportedAnnotationTypes;
+
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
@@ -30,7 +37,8 @@ import io.appium.java_client.remote.MobilePlatform;
 public class Helper {
 	
 	ExtentReports extent; 
-	AppiumDriver<?> driver;
+	static AppiumDriver<?> driver;
+	static WebDriverWait wait;
 	
 	//Driver initialization
 	public AppiumDriver<?> returnDriver(String platform) throws Exception {
@@ -64,10 +72,14 @@ public class Helper {
 
             case "android":
 
-                capabilities.setCapability(MobileCapabilityType.APP, new File(testdata.getApp_android_path()).getAbsolutePath());
+            	String path = returnProjectPath()+""+testdata.getApp_android_path();
+            	
+                capabilities.setCapability(MobileCapabilityType.APP, path);
                 capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, testdata.getDevice_android_name());
                 capabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, MobilePlatform.ANDROID);
-
+                capabilities.setCapability("appPackage", testdata.getAppPackage());
+                capabilities.setCapability("appActivity", testdata.getAppActivity());
+                
                 driver = new AndroidDriver<RemoteWebElement>(new URL(completeURL), capabilities);
                 break;
 
@@ -75,19 +87,23 @@ public class Helper {
                 throw new Exception("Platform not supported");
         }
 
+        wait = new WebDriverWait(driver, 30);
         return driver;
     }
 	
 	//Extension methods
     public void ClickOnTheElement(MobileElement element) {
-    	element.click();
+    	wait.until(ExpectedConditions.elementToBeClickable(element)).click();
     }
 
     public void EnterTextIntoTextbox(MobileElement element, String text) {
-    	element.sendKeys(text);
+    	wait.until(ExpectedConditions.elementToBeClickable(element)).sendKeys(text);
     }
 	
-	
+    public String GetTextFromElement(MobileElement element) {
+    	return wait.until(ExpectedConditions.elementToBeClickable(element)).getText();
+    }
+
 	
 	//Extent report initialization
 	public ExtentReports startExtentReport(String reportName) {
@@ -117,7 +133,7 @@ public class Helper {
 		return extent;
 	}
 
-	public void generateLogs(String status, String msg, ExtentTest test) {
+	public void WriteLogs(String status, String msg, ExtentTest test) {
 	
 		status = status.toLowerCase();
 		
@@ -140,7 +156,7 @@ public class Helper {
 		}
 	}
 	
-	public void generateLogsWithScreenshot(String status, String screenshotName, ExtentTest test) {
+	public void WriteLogsWithScreenshot(String status, String screenshotName, ExtentTest test) {
 		
 		status = status.toLowerCase();
 
@@ -189,6 +205,12 @@ public class Helper {
 		}		
 		return dir;
 	    
+	}
+	
+	public String returnProjectPath() 
+	{
+		String root = FileSystems.getDefault().getPath("").toAbsolutePath().toString();
+		return root;
 	}
 	
 	private String encodeFileToBase64(File file) {

@@ -2,6 +2,8 @@ package pages;
 
 import org.openqa.selenium.support.PageFactory;
 
+import com.aventstack.extentreports.ExtentTest;
+
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.pagefactory.AndroidFindBy;
@@ -10,9 +12,12 @@ import utils.Helper;
 
 public class LoginPage extends Helper{
 
-	public LoginPage(AppiumDriver<?> driver) {
+	ExtentTest test;
+	
+	public LoginPage(AppiumDriver<?> driver, ExtentTest test) {
         PageFactory.initElements(new AppiumFieldDecorator(driver), this);
-    }
+        this.test = test;
+	}
 	
 	@AndroidFindBy(id="btn_welcome_continue_with_email")
     MobileElement Welcome_ContinueWithEmail_Button;
@@ -37,6 +42,9 @@ public class LoginPage extends Helper{
     	ClickOnTheElement(ContinueWithEmail_Button);
     	EnterTextIntoTextbox(Password_Textbox, password);
     	ClickOnTheElement(Login_Button);
+
+    	WriteLogs("info", "login successfull", test);
+    	WriteLogsWithScreenshot("info", "login successfull", test);
     	
     }
     

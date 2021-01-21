@@ -2,16 +2,24 @@
 <testng-results ignored="0" total="1" passed="1" failed="0" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2021-01-20T18:23:43 MYT" name="Default suite" finished-at="2021-01-20T18:23:58 MYT" duration-ms="14777">
+  <suite started-at="2021-01-21T16:23:06 MYT" name="Default suite" finished-at="2021-01-21T16:25:49 MYT" duration-ms="162457">
     <groups>
     </groups>
-    <test started-at="2021-01-20T18:23:43 MYT" name="Default test" finished-at="2021-01-20T18:23:58 MYT" duration-ms="14777">
-      <class name="testCases.Todolist_TestCases">
-        <test-method signature="test()[pri:0, instance:testCases.Todolist_TestCases@12359a82]" started-at="2021-01-20T18:23:43 MYT" name="test" finished-at="2021-01-20T18:23:58 MYT" duration-ms="14688" status="PASS">
+    <test started-at="2021-01-21T16:23:06 MYT" name="Default test" finished-at="2021-01-21T16:25:49 MYT" duration-ms="162457">
+      <class name="testCases.Todoist_TestCases">
+        <test-method is-config="true" signature="setUp()[pri:0, instance:testCases.Todoist_TestCases@3f9342d4]" started-at="2021-01-21T16:23:06 MYT" name="setUp" finished-at="2021-01-21T16:23:51 MYT" duration-ms="45281" status="PASS">
           <reporter-output>
           </reporter-output>
-        </test-method> <!-- test -->
-      </class> <!-- testCases.Todolist_TestCases -->
+        </test-method> <!-- setUp -->
+        <test-method signature="VerifyTheProjectHasBeenCreatedSuccessfullyViaAPIOnMobile()[pri:0, instance:testCases.Todoist_TestCases@3f9342d4]" started-at="2021-01-21T16:23:52 MYT" name="VerifyTheProjectHasBeenCreatedSuccessfullyViaAPIOnMobile" finished-at="2021-01-21T16:25:42 MYT" duration-ms="110632" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- VerifyTheProjectHasBeenCreatedSuccessfullyViaAPIOnMobile -->
+        <test-method is-config="true" signature="tearDown()[pri:0, instance:testCases.Todoist_TestCases@3f9342d4]" started-at="2021-01-21T16:25:42 MYT" name="tearDown" finished-at="2021-01-21T16:25:49 MYT" duration-ms="6377" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- tearDown -->
+      </class> <!-- testCases.Todoist_TestCases -->
     </test> <!-- Default test -->
   </suite> <!-- Default suite -->
 </testng-results>

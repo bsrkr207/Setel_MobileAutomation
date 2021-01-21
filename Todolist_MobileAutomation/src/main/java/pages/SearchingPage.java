@@ -2,61 +2,90 @@ package pages;
 
 import org.openqa.selenium.support.PageFactory;
 
+import com.aventstack.extentreports.ExtentTest;
+
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
+import utils.Helper;
 
-public class SearchingPage {
+public class SearchingPage extends Helper{
 
+	ExtentTest test;
+	
 	@AndroidFindBy(id="search_edit_text")
-    MobileElement txtSearch;
+    MobileElement Search_Textbox;
 
-    @AndroidFindBy(xpath="//androidx.appcompat.app.ActionBar.c[@content-desc='Projects']")
-    MobileElement tagProject;
+	@AndroidFindBy(xpath="//android.widget.TextView[contains(@text, 'PROJECTS')]")
+	MobileElement ActionBar_Project;
 
-    @AndroidFindBy(xpath="//androidx.appcompat.app.ActionBar.c[@content-desc='Tasks']")
-    MobileElement tagTask;
+	@AndroidFindBy(xpath="//android.widget.TextView[contains(@text, 'TASKS')]")
+    MobileElement ActionBar_Task;
+
+    @AndroidFindBy(id="button1")
+    MobileElement TimeSetting_Popup_Yes;
 
     @AndroidFindBy(id="content")
-    MobileElement resultProjectFirstItem;
+    MobileElement ProjectFirstItem_Result;
 
     @AndroidFindBy(id="text")
-    MobileElement resultTaskFirstItem;
+    MobileElement TaskFirstItem_Result;
 
     @AndroidFindBy(id="checkmark")
-    MobileElement completeFirstCheckMark;
+    MobileElement FirstCheckMark_Complete;
 
 
-    public SearchingPage(AppiumDriver<?> driver) {
+    public SearchingPage(AppiumDriver<?> driver, ExtentTest test) {
         PageFactory.initElements(new AppiumFieldDecorator(driver), this);
+        this.test = test;
     }
 
-    public void enterSearchingValue(String keyword) {
-        txtSearch.sendKeys(keyword);
+    public void EnterSearchingValue(String keyword) {
+        
+    	EnterTextIntoTextbox(Search_Textbox, keyword);
+    	
     }
 
-    public void clickOnProjectTag() {
-        tagProject.click();
+    public void ClickOnProjectTag() {
+    	
+    	ClickOnTheElement(ActionBar_Project);
     }
 
-    public void clickOnTaskTag() {
-        tagTask.click();
+    public void ClickOnTaskTag() {
+    	
+    	ClickOnTheElement(ActionBar_Task);
     }
 
-    public String getResultProjectFirstItemValue() {
-        return resultProjectFirstItem.getText();
+    public void ClickOnTimeSettings_Yes() {
+    	
+    	try {
+    			ClickOnTheElement(TimeSetting_Popup_Yes);
+    			WriteLogs("info", "Time settings popup - yes button selected", test);
+		} catch (Exception e) {
+			
+			WriteLogs("info", "Time settings popup not displayed", test);
+		}	
+    		
+    }
+    
+    public String GetResultProjectFirstItemValue() {
+    
+    	return GetTextFromElement(ProjectFirstItem_Result);
     }
 
-    public String getResultTaskFirstItemValue() {
-        return resultTaskFirstItem.getText();
+    public String GetResultTaskFirstItemValue() {
+    	
+    	return GetTextFromElement(TaskFirstItem_Result);
     }
 
-    public void clickOnResultFirstItem() {
-        resultProjectFirstItem.click();
+    public void ClickOnResultFirstItem() {
+        
+    	ClickOnTheElement(ProjectFirstItem_Result);
     }
 
-    public void clickOnFirstSearchingTaskCheckMark() {
-        completeFirstCheckMark.click();
+    public void ClickOnFirstSearchingTaskCheckMark() {
+    	
+    	ClickOnTheElement(FirstCheckMark_Complete);
     }
 }
