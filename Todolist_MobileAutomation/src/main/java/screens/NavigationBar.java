@@ -1,4 +1,4 @@
-package pages;
+package screens;
 
 import org.openqa.selenium.support.PageFactory;
 
@@ -11,22 +11,22 @@ import utils.Helper;
 public class NavigationBar extends Helper{
 
 	@AndroidFindBy(id="menu_content_search")
-    MobileElement MagnifyingGlass_Icon;
+    MobileElement magnifyingGlass_Icon;
 
     @AndroidFindBy(id="quick_add_item")
-    MobileElement QuickAddItem_Button;
+    MobileElement quickAddItem_Button;
 
     public NavigationBar(AppiumDriver<?> driver) {
         PageFactory.initElements(new AppiumFieldDecorator(driver), this);
     }
 
-    public void ClickOnMagnifyingGlassIcon() {
+    public void clickOnMagnifyingGlassIcon() {
         
-    	ClickOnTheElement(MagnifyingGlass_Icon);
+    	clickOnTheElement(magnifyingGlass_Icon);
     }
 
-    public void ClickOnQuickAddItemButton() {
-    	ClickOnTheElement(QuickAddItem_Button);
+    public void clickOnQuickAddItemButton() {
+    	clickOnTheElement(quickAddItem_Button);
     }
     
 }

@@ -5,9 +5,9 @@
     <classes>
       <class name="testCases.Todoist_TestCases">
         <methods>
+          <include name="VerifyTheTaskReopenedSuccessfullyViaAPIOnMobile"/>
           <include name="setUp"/>
           <include name="tearDown"/>
-          <include name="VerifyTheProjectHasBeenCreatedSuccessfullyViaAPIOnMobile"/>
         </methods>
       </class> <!-- testCases.Todoist_TestCases -->
     </classes>

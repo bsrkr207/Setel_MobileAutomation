@@ -3,40 +3,46 @@ package testCases;
 import java.sql.Timestamp;
 
 import org.testng.Assert;
-import org.testng.ITestClass;
-import org.testng.ITestMethodFinder;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 
 import io.appium.java_client.AppiumDriver;
-import pages.LoginPage;
-import pages.NavigationBar;
-import pages.SearchingPage;
-import utils.APIHelper;
+import screens.AddItemsScreen;
+import screens.LoginScreen;
+import screens.NavigationBar;
+import screens.SearchingScreen;
+import utils.Projects_APIHelper;
+import utils.Tasks_APIHelper;
 import utils.Helper;
 import utils.TestData;
 
 public class Todoist_TestCases {
 
-	private ExtentTest test;
+	static ExtentTest test;
 	private ExtentReports report;
 	
 	private AppiumDriver<?> driver;
-    private APIHelper apiHelper;
+    private Projects_APIHelper projectsAPIHelper;
+    private Tasks_APIHelper tasksAPIHelper;
     private Helper helper = new Helper();
     private TestData testdata = new TestData();
-    private String projectName;
+    LoginScreen loginScreen; 
+    NavigationBar navigationBar; 
+    SearchingScreen searchingScreen;
+    AddItemsScreen addItemsScreen;
+    private static String projectName;
     private String taskName;
-
+    String id = new Timestamp(System.currentTimeMillis()).toString();
     
-    @BeforeTest
+    
+    @BeforeSuite
     public void setUp() throws Exception {
         
-    	testdata = testdata.ReturnTestData();
+    	testdata = testdata.returnTestData();
     	
     	driver = helper.returnDriver(testdata.getPlatform());
         
@@ -44,55 +50,110 @@ public class Todoist_TestCases {
     	
     }
 
-    @Test
-    public void VerifyTheProjectHasBeenCreatedSuccessfullyViaAPIOnMobile() {
+    @Test(priority=1)
+    public void VerifyTheProjectCreatedSuccessfullyViaAPIOnMobile() {
         
     	test = report.createTest(new Exception().getStackTrace()[0].getMethodName());
     	
-    	apiHelper = new APIHelper(test);
+    	projectsAPIHelper = new Projects_APIHelper(test);
     	
-    	LoginPage loginScreen = new LoginPage(driver, test);
+    	loginScreen = new LoginScreen(driver, test);
+    	navigationBar = new NavigationBar(driver);
+    	searchingScreen = new SearchingScreen(driver, test);
         
-        NavigationBar navigationBar = new NavigationBar(driver);
-        
-        SearchingPage searchingPage = new SearchingPage(driver, test);
-
         //create project by API
-        String id = new Timestamp(System.currentTimeMillis()).toString();
-        
-        projectName = "TestSetel_" + id;
+        projectName = "TestProjectSetel_" + id;
 
-        apiHelper.CreateProjectSuccessfully(testdata.getBase_uri(), projectName, testdata.getBearer_token());
+        projectsAPIHelper.createProjectUsingAPI(testdata.getBase_uri(), projectName, testdata.getBearer_token());
         
         //log in and verify on Mobile
-        loginScreen.LogintoToDoList(testdata.getUserID(), testdata.getPassword());
+        loginScreen.logintoToDoList(testdata.getUserID(), testdata.getPassword());
         
-        searchingPage.ClickOnTimeSettings_Yes();
-        
-        navigationBar.ClickOnMagnifyingGlassIcon();
-
-        searchingPage.ClickOnProjectTag();
-        
-        searchingPage.EnterSearchingValue(projectName);
+        searchingScreen.clickOnTimeSettings_Yes();
+        navigationBar.clickOnMagnifyingGlassIcon();
+        searchingScreen.clickOnProjectTag();
+        searchingScreen.enterSearchingValue(projectName);
                 
-        String actualSearchingResult = searchingPage.GetResultProjectFirstItemValue();
+        String getSearchResult = searchingScreen.getResultProjectFirstItemValue();
         
         try {
-        	Assert.assertEquals(projectName, actualSearchingResult);
+        	Assert.assertEquals(getSearchResult, projectName);
         	
-        	helper.WriteLogs("pass", "<b>"+ projectName + " >> Project successfully created via API and verified on mobile </b>", test);
-        	helper.WriteLogsWithScreenshot("pass", projectName, test);
+        	helper.writeLogs("pass", "<b>"+ projectName + " >> Project successfully created via API and verified on mobile </b>", test);
+        	helper.writeLogsWithScreenshot("pass", projectName, test);
 		} catch (Exception e) {
 			
-			helper.WriteLogs("fail", e.getMessage(), test);
+			helper.writeLogs("fail", e.getMessage(), test);
 		}
         
-    
     }
     
     
+    @Test(priority=2)
+    public void VerifyTheTaskCreatedSuccessfullyOnMobileByAPI() throws InterruptedException {
+        
+    	test = report.createTest(new Exception().getStackTrace()[0].getMethodName());
+    	
+    	tasksAPIHelper = new Tasks_APIHelper(test);
+    	addItemsScreen = new AddItemsScreen(driver);
+        searchingScreen = new SearchingScreen(driver, test);
+        
+    	if(projectName == null){
+            
+        	//create project by API
+        	String testProjectName = "TestProjectSetel_" + id;
+        	projectsAPIHelper.createProjectUsingAPI(testdata.getBase_uri(), testProjectName, testdata.getBearer_token());
+            
+            projectName = testProjectName;
+        }
+        String testTaskName = "TestTaskSetel_" + id;
+        
+        searchingScreen.clickOnResultFirstItem();
+        addItemsScreen.clickOnAddItemButton();
+        addItemsScreen.enterTaskName(testTaskName);
+        addItemsScreen.clickOnAddtask_Enter();
+        addItemsScreen.clickOnTaskFirstItem();
+        taskName = testTaskName;
+        helper.writeLogsWithScreenshot("pass", taskName +"_Created", test);
+        Thread.sleep(5000);
+        
+        //verify the created task by API
+        tasksAPIHelper.verifyTaskCreatedUsingAPI(testdata.getBase_uri(), testdata.getBearer_token(), testTaskName);
+
+    }
+
+    @Test(priority=3)
+    public void VerifyTheTaskReopenedSuccessfullyViaAPIOnMobile() throws InterruptedException {
+        
+    	test = report.createTest(new Exception().getStackTrace()[0].getMethodName());
+    	
+    	tasksAPIHelper = new Tasks_APIHelper(test);
+    	
+    	String taskID = tasksAPIHelper.getIdBaseOnTaskName(testdata.getBase_uri(), testdata.getBearer_token(), taskName);
+    	
+    	//Close the task created in test case 2
+    	addItemsScreen.closeTheTask(); 
+    	helper.writeLogsWithScreenshot("pass", taskName +"_Closed", test);
+    	
+    	//Reopen closed task via API
+    	tasksAPIHelper.reopenATaskUsingAPI(testdata.getBase_uri(), testdata.getBearer_token(), taskName, taskID);
+    	Thread.sleep(5000);
+    	
+    	String getSearchResult = addItemsScreen.GetResultTaskFirstItemValue();
+         
+         try {
+         	Assert.assertEquals(getSearchResult, taskName);
+         	
+         	helper.writeLogs("pass", "<b>"+ taskName + " >> Task successfully reopend via API and verified on the mobile </b>", test);
+        	helper.writeLogsWithScreenshot("pass", taskName, test);
+ 		} catch (Exception e) {
+ 			
+ 			helper.writeLogs("fail", "Reopened Task not shown in the project", test);
+ 		}
+    	
+    }
     
-    @AfterTest
+    @AfterSuite
     public void tearDown() throws Exception {
     	report.flush();
     	driver.quit();

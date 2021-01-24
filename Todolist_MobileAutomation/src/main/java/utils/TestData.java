@@ -23,7 +23,9 @@ public class TestData {
 	private String app_android_path; 
 	private String appPackage; 
 	private String appActivity; 
-	private String base_uri; 
+	private String base_uri;
+	private String projects_subURI;
+	private String tasks_subURI;
 	private String bearer_token;
 	
 	public String getUserID() {
@@ -166,7 +168,7 @@ public class TestData {
 	
 	
 	
-	public TestData ReturnTestData() {
+	public TestData returnTestData() {
 		
 		TestData testdata = null;
 		
@@ -188,6 +190,22 @@ public class TestData {
 		    ex.printStackTrace();
 		}
 		return testdata;
+	}
+
+	public String getProjects_subURI() {
+		return projects_subURI;
+	}
+
+	public void setProjects_subURI(String projects_subURI) {
+		this.projects_subURI = projects_subURI;
+	}
+
+	public String getTasks_subURI() {
+		return tasks_subURI;
+	}
+
+	public void setTasks_subURI(String tasks_subURI) {
+		this.tasks_subURI = tasks_subURI;
 	}
 	
 

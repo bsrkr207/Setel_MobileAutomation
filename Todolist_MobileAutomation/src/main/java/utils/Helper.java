@@ -8,13 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.Base64;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.processing.SupportedAnnotationTypes;
-
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -24,7 +19,6 @@ import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.Status;
-import com.aventstack.extentreports.markuputils.Markup;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 
 import io.appium.java_client.AppiumDriver;
@@ -45,7 +39,7 @@ public class Helper {
         
     	TestData testdata = new TestData();
 		
-		testdata = testdata.ReturnTestData();
+		testdata = testdata.returnTestData();
 		
         DesiredCapabilities capabilities = new DesiredCapabilities();
 
@@ -87,24 +81,31 @@ public class Helper {
                 throw new Exception("Platform not supported");
         }
 
-        wait = new WebDriverWait(driver, 30);
+        wait = new WebDriverWait(driver, 50);
         return driver;
     }
 	
 	//Extension methods
-    public void ClickOnTheElement(MobileElement element) {
+    public void clickOnTheElement(MobileElement element) {
     	wait.until(ExpectedConditions.elementToBeClickable(element)).click();
     }
 
-    public void EnterTextIntoTextbox(MobileElement element, String text) {
-    	wait.until(ExpectedConditions.elementToBeClickable(element)).sendKeys(text);
+    public void enterTextIntoTextbox(MobileElement element, String text) {
+    	wait.until(ExpectedConditions.visibilityOf(element)).sendKeys(text);
     }
 	
-    public String GetTextFromElement(MobileElement element) {
+    public boolean waitForVisibilityOfTheElement(MobileElement element) {
+    	return wait.until(ExpectedConditions.visibilityOf(element)).isDisplayed();
+    }
+	
+    public String getTextFromElement(MobileElement element) {
     	return wait.until(ExpectedConditions.elementToBeClickable(element)).getText();
     }
 
-	
+    public void clearTextFromElement(MobileElement element) {
+    	wait.until(ExpectedConditions.elementToBeClickable(element)).clear();
+    }
+
 	//Extent report initialization
 	public ExtentReports startExtentReport(String reportName) {
 		
@@ -133,7 +134,7 @@ public class Helper {
 		return extent;
 	}
 
-	public void WriteLogs(String status, String msg, ExtentTest test) {
+	public void writeLogs(String status, String msg, ExtentTest test) {
 	
 		status = status.toLowerCase();
 		
@@ -156,7 +157,7 @@ public class Helper {
 		}
 	}
 	
-	public void WriteLogsWithScreenshot(String status, String screenshotName, ExtentTest test) {
+	public void writeLogsWithScreenshot(String status, String screenshotName, ExtentTest test) {
 		
 		status = status.toLowerCase();
 

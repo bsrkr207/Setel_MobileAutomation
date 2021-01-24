@@ -35,6 +35,7 @@
 	
 	
 	"base_uri" : "https://api.todoist.com",
-	"bearer_token" : "a74af989e46a0d64d63525749993cf8cad756258"
-	
+	"bearer_token" : "a74af989e46a0d64d63525749993cf8cad756258",
+	"projects_subURI" : "/rest/v1/projects",
+	"tasks_subURI" : "/rest/v1/tasks"
 }
